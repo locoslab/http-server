@@ -33,6 +33,7 @@ if (argv.h || argv.help) {
     '  -U --utc     Use UTC time format in log messages.',
     '',
     '  -P --proxy   Fallback proxy if the request cannot be resolved. e.g.: http://someurl.com',
+    '  --proxy-secure=[true|false]  Verify proxied SSL certificates [true]',
     '',
     '  -S --ssl     Enable https.',
     '  -C --cert    Path to ssl cert file (default: cert.pem).',
@@ -100,9 +101,16 @@ function listen(port) {
     gzip: argv.g || argv.gzip,
     robots: argv.r || argv.robots,
     ext: argv.e || argv.ext,
-    logFn: logger.request,
-    proxy: proxy
+    logFn: logger.request
   };
+
+  if (proxy) {
+    options.proxy = {
+      target: proxy,
+      secure: argv['proxy-secure'] !== 'false',
+      changeOrigin: true
+    };
+  }
 
   if (argv.cors) {
     options.cors = true;
